@@ -4,7 +4,7 @@ const app = express();
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const zod = require('zod');
-const User = require('../db');
+const { User } = require('../db');
 const bcrypt = require('bcrypt');
 const authMiddleware = require('../middleware');
 const saltRounds = 10;
@@ -81,16 +81,16 @@ router.post('/signup', async (req, res) => {
     }
 });
 
-router.post('/signin', async(req, res)=>{
+router.post('/signin', async (req, res) => {
 
     if (!(signinSchema.safeParse(req.body).success)) {
         res.status(411).json({
             msg: "Incorrect inputs"
         });
     }
-    else{
+    else {
         try {
-            
+
             const user = await User.findOne({
                 username: req.body.username
             });
@@ -98,7 +98,7 @@ router.post('/signin', async(req, res)=>{
             const match = await bcrypt.compare(req.body.password, user.password);
 
             if (match) {
-                
+
                 const token = jwt.sign({
                     userId: user._id
                 }, process.env.JWT_SECRET);
@@ -110,7 +110,7 @@ router.post('/signin', async(req, res)=>{
                 return;
 
             }
-            else{
+            else {
                 res.status(411).json({
                     msg: "Error while logging in"
                 });
@@ -125,8 +125,8 @@ router.post('/signin', async(req, res)=>{
 
 });
 
-router.put('/', authMiddleware, async(req, res)=>{
-    
+router.put('/', authMiddleware, async (req, res) => {
+
     if (!updateBody.safeParse(req.body).success) {
         res.status(411).json({
             msg: "Error while updating information",
@@ -143,7 +143,7 @@ router.put('/', authMiddleware, async(req, res)=>{
     });
 });
 
-router.get('/bulk',async (req, res)=>{
+router.get('/bulk', async (req, res) => {
 
     const filter = req.query.filter || "";
 
