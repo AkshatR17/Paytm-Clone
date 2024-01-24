@@ -16,6 +16,11 @@ const signupSchema = zod.object({
     lastName: zod.string()
 });
 
+const signinSchema = zod.object({
+    username: zod.string().email(),
+    password: zod.string().min(6)
+});
+
 router.post('/signup', async (req, res) => {
 
     if (!(signupSchema.safeParse(req.body).success)) {
@@ -67,6 +72,50 @@ router.post('/signup', async (req, res) => {
 
 
     }
+});
+
+router.post('/signin', async(req, res)=>{
+
+    if (!(signinSchema.safeParse(req.body).success)) {
+        res.status(411).json({
+            msg: "Incorrect inputs"
+        });
+    }
+    else{
+        try {
+            
+            const user = await User.findOne({
+                username: req.body.username
+            });
+
+            const match = await bcrypt.compare(req.body.password, user.password);
+
+            if (match) {
+                
+                const token = jwt.sign({
+                    userId: user._id
+                }, process.env.JWT_SECRET);
+
+                res.status(200).json({
+                    token
+                });
+
+                return;
+
+            }
+            else{
+                res.status(411).json({
+                    msg: "Error while logging in"
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                msg: "Internal server error"
+            })
+        }
+    }
+
 });
 
 module.exports = router;
