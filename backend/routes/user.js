@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const zod = require('zod');
 const User = require('../db');
 const bcrypt = require('bcrypt');
+const authMiddleware = require('../middleware');
 const saltRounds = 10;
 
 
@@ -19,6 +20,12 @@ const signupSchema = zod.object({
 const signinSchema = zod.object({
     username: zod.string().email(),
     password: zod.string().min(6)
+});
+
+const updateBody = zod.object({
+    passoword: zod.string().optional(),
+    firstName: zod.string().optional(),
+    lastName: zod.string().optional()
 });
 
 router.post('/signup', async (req, res) => {
@@ -116,6 +123,51 @@ router.post('/signin', async(req, res)=>{
         }
     }
 
+});
+
+router.put('/', authMiddleware, async(req, res)=>{
+    
+    if (!updateBody.safeParse(req.body).success) {
+        res.status(411).json({
+            msg: "Error while updating information",
+        });
+        return;
+    }
+
+    await User.updateOne(req.body, {
+        _id: req.userId
+    });
+
+    res.status(200).json({
+        msg: "Updated successfully"
+    });
+});
+
+router.get('/bulk',async (req, res)=>{
+
+    const filter = req.query.filter || "";
+
+    const users = await User.find({
+        $or: [{
+            firstName: {
+                "$regex": filter
+            }
+        }, {
+            lastName: {
+                "$regex": filter
+            }
+        }]
+    })
+
+    res.json({
+        user: users.map(user => ({
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            _id: user._id
+        }))
+    })
+    // map function just doesn't iterate over the users array but it also creates the new array and in above the new user is created which is pushed into the user, the object literal contains properties of new object.
 });
 
 module.exports = router;
