@@ -26,6 +26,7 @@ router.get('/balance', authMiddleware, async (req, res) => {
 
 });
 
+// Below transfer code could be understood from chatgpt by tackling the error introduced in previous code
 router.post('/transfer', authMiddleware, async (req, res) => {
 
     const session = await mongoose.startSession();
