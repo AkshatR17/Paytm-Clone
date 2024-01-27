@@ -37,9 +37,6 @@ router.post('/transfer', authMiddleware, async (req, res) => {
             userId: req.userId
         }).session(session);
 
-        console.log(account.balance);
-        console.log(req.body.amount);
-
         if (account.balance < req.body.amount) {
             throw new Error("Insufficient balance");
         }
