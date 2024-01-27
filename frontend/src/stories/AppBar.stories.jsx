@@ -1,15 +1,13 @@
-import { BottomWarning } from "../components/BottomWarning";
+import { Button } from '../components/Button';
 
 //👇 This default export determines where your story goes in the story list
 export default {
-  component: BottomWarning,
+  component: Button,
 };
 
 export const FirstStory = {
   args: {
     //👇 The args you need here will depend on your component
-    label : "Already have account",
-    buttonText: "Sign in",
-    to: "/signin"
+    label : "SignUp"
   },
 };
