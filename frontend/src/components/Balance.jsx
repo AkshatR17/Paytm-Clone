@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 
 export const Balance = ({value})=>{
     return <div className="flex">
