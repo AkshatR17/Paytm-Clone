@@ -1,24 +1,31 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-key */
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./Button";
+import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 export const Users = () => {
-    
-  const [users, setUsers] = useState([
-    {
-      firstName: "Akshat",
-      lastName: "Garg",
-      _id: 1,
-    },
-  ]);
+  const [users, setUsers] = useState([]);
+  const [filter, setFilter] = useState("");
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/api/v1/user/bulk?filter=" + filter)
+      .then((response) => {
+        setUsers(response.data.user);
+      });
+  }, [filter]);
 
   return (
     <>
       <div className="font-bold mt-6 text-lg">Users</div>
       <div>
         <input
+          onChange={(e) => {
+            setFilter(e.target.value);
+          }}
           type="text"
           placeholder="Serach users...."
           className="w-full px-2 py-1 border rounded border-slate-200 "
@@ -35,6 +42,9 @@ export const Users = () => {
 
 // eslint-disable-next-line react/prop-types
 function User({ user }) {
+
+  const navigate = useNavigate();
+
   return (
     <div className="flex justify-between">
       <div className="flex">
@@ -45,16 +55,17 @@ function User({ user }) {
         </div>
 
         <div className="flex flex-col justify-center h-ful">
-            <div>
-                {user.firstName} {user.lastName}
-            </div>
+          <div>
+            {user.firstName} {user.lastName}
+          </div>
         </div>
       </div>
 
       <div className="flex flex-col justify-center h-ful">
-        <Button label={"Send Money"}></Button>
+        <Button label={"Send Money"} onClick={()=>{
+          navigate(`/send?id=${user._id}&name=${user.firstName}`);
+        }}></Button>
       </div>
-
     </div>
   );
 }
