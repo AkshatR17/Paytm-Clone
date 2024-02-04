@@ -28,6 +28,24 @@ const updateBody = zod.object({
     lastName: zod.string().optional()
 });
 
+router.get('/' ,authMiddleware ,async(req,res)=>{
+
+    const account = await Account.findOne({
+        userId: req.userId
+    });
+
+    const user = await User.findOne({
+        _id: req.userId
+    });
+
+    res.status(200).json({
+        msg: "authenticated",
+        intialAmount: account.balance,
+        username: user.username
+    });
+    
+});
+
 router.post('/signup', async (req, res) => {
 
     if (!(signupSchema.safeParse(req.body).success)) {
