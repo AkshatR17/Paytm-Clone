@@ -59,10 +59,11 @@ router.post('/signup', async (req, res) => {
             });
 
             const userId = user._id;
+            const intialAmount =  Math.round(1 + Math.random() * 10000);
 
             await Account.create({
                 userId,
-                balance: Math.round(1 + Math.random() * 10000)
+                balance: intialAmount
             });
 
             const token = jwt.sign({
@@ -71,7 +72,8 @@ router.post('/signup', async (req, res) => {
 
             res.json({
                 message: "User created successfully",
-                token
+                token,
+                intialAmount
             });
 
         } catch (error) {
@@ -80,9 +82,6 @@ router.post('/signup', async (req, res) => {
                 msg: "Internal Server error"
             });
         }
-
-
-
 
     }
 });
@@ -103,6 +102,12 @@ router.post('/signin', async (req, res) => {
 
             const match = await bcrypt.compare(req.body.password, user.password);
 
+            const account = await Account.findOne({
+                userId: user._id
+            });
+
+            const intialAmount = account.balance;
+
             if (match) {
 
                 const token = jwt.sign({
@@ -110,7 +115,8 @@ router.post('/signin', async (req, res) => {
                 }, process.env.JWT_SECRET);
 
                 res.status(200).json({
-                    token
+                    token,
+                    intialAmount
                 });
 
                 return;

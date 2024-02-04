@@ -33,7 +33,8 @@ export const SignIn = ()=>{
                                 password
                             });
                             localStorage.setItem('token', response.data.token);
-                            navigate('/dashboard');
+                        
+                            navigate(`/dashboard?amount=${response.data.intialAmount}&firstName=${username[0].toUpperCase()}`);
                         } catch (error) {
                             console.log(error);
                         }

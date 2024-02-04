@@ -51,7 +51,7 @@ export function SendMoney() {
                 className="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white"
                 onClick={async () => {
                   try {
-                    axios.post(
+                    const response = axios.post(
                       "http://localhost:3000/api/v1/account/transfer",
                       {
                         to: id,
@@ -65,7 +65,7 @@ export function SendMoney() {
                       }
                     );
                     
-                    navigate('/dashboard');
+                    navigate(`/dashboard?amount=${(await response).data.newAmount}&firstName=${(await response).data.userName[0].toUpperCase()}`);
                   } catch (error) {
                     console.log(error);
                   }

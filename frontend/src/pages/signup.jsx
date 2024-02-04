@@ -42,8 +42,9 @@ export const SignUp = ()=>{
                                 lastName,
                                 password
                             });
+                            const amount = response.data.intialAmount;
                             localStorage.setItem('token', response.data.token);
-                            navigate('/dashboard');
+                            navigate(`/dashboard?amount=${amount}&firstName=${username[0].toUpperCase()}`);
 
                         } catch (error) {
                             console.log(error);
